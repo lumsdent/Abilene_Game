@@ -7,10 +7,12 @@ public class PlayerMovement : MonoBehaviour
 {
     Rigidbody2D rb;
     Vector2 movement;
+    Transform playerTransform;
     [SerializeField] float moveSpeed;
     // Start is called before the first frame update
     void Awake()
     {
+        playerTransform = GetComponent<Transform>();
         rb = GetComponent<Rigidbody2D>();
     }
 
@@ -18,6 +20,18 @@ public class PlayerMovement : MonoBehaviour
     void FixedUpdate()
     {
         rb.velocity = movement * moveSpeed;
+        StartCoroutine("CircleCheck");
+    }
+
+    IEnumerator CircleCheck()
+    {
+        if (DecayCircle.IsOutsideCircle(playerTransform.localPosition))
+        {
+            Debug.Log("Outside");
+        }
+            // execute block of code here
+            yield return new WaitForSeconds(1f);
+        
     }
 
     void OnMove(InputValue inputValue)

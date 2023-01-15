@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Tilemaps;
 
 public class DecayCircle : MonoBehaviour
 {
@@ -11,18 +10,20 @@ public class DecayCircle : MonoBehaviour
     private Vector3 targetCircleSize, targetCirclePosition;
     private float circleShrinkSpeed;
 
-    private Tilemap tilemap;
+
+    //TODO remove Hard Coding
     private void Awake()
     {
-        tilemap= GetComponent<Tilemap>();
-        circleShrinkSpeed= 1.0f;
         circleTransform = GetComponent<Transform>();
-        SetCircleSize(new Vector3(10, 10), new Vector3(0, 0));
+        SetCircleSize(new Vector3(30, 30), new Vector3(3, -3));
 
-        targetCirclePosition= new Vector3(1, 1);
+        //circle movement
+        circleShrinkSpeed= 1.0f;
+        targetCirclePosition = new Vector3(1, 1);
         targetCircleSize = new Vector3(6, 6);
     }
 
+    //Only needed if circle moves
     private void Update()
     {
         Vector3 sizeChangeVector = (targetCircleSize - circleSize).normalized;
@@ -30,19 +31,15 @@ public class DecayCircle : MonoBehaviour
         
         Vector3 positionChangeVector = (targetCirclePosition - circlePosition).normalized;
         Vector3 newCirclePosition = circlePosition + positionChangeVector * Time.deltaTime * circleShrinkSpeed;
-        SetCircleSize(newCircleSize, newCirclePosition);
-        StartCoroutine(nameof(RefreshTiles));
+        // SetCircleSize(newCircleSize, newCirclePosition);
     }
 
-    IEnumerator RefreshTiles()
+    public static bool IsOutsideCircle(Vector3 position)
     {
-        if(tilemap!=null)
-        {
-            tilemap.RefreshAllTiles();
-        }
-        // execute block of code here
-        yield return new WaitForSeconds(circleShrinkSpeed);
-
+        //TODO only works for grid value, maybe make it configurable
+        float circleRadius = circleSize.x / 0.16f * 0.5f;
+        Vector3 circleGridPosition = circlePosition / 0.16f;
+        return Vector3.Distance(position, circleGridPosition) > circleRadius;
     }
 
     private void SetCircleSize(Vector3 size, Vector3 position)
@@ -54,9 +51,5 @@ public class DecayCircle : MonoBehaviour
         circleTransform.localPosition = position;  
     }
 
-    public static bool IsOutsideCircle(Vector3 position)
-    {
-        float circleRadius = circleSize.x * 0.5f;
-        return Vector3.Distance(position, circlePosition) > circleRadius;
-    }
+
 }

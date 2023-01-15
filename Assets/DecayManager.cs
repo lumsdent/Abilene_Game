@@ -23,25 +23,86 @@ public class DecayManager : MonoBehaviour
     private ActiveDecay activeDecayPrefab;
     
     [SerializeField]
-    public float spreadInterval;
+    public float startTime, spreadInterval;
+
+    [SerializeField]
+    public Difficulty difficulty = Difficulty.Hard;
 
 
     private List<Vector3Int> activeDecayList = new List<Vector3Int>();
 
     private List<Vector3Int> decayedTileList = new List<Vector3Int>();
 
-    public void TryToSpread(Vector3Int position)
+    private void Start()
     {
-        for (int x = position.x - 1; x < position.x + 2; x++)
+        SetupDecaySpawn();
+        InvokeRepeating(nameof(SpreadFromDecayedTile), startTime, spreadInterval);
+    }
+
+    //Test Method; Non-essential for Gameplay
+    private void Update()
+    {
+        if (Input.GetMouseButtonDown(0))
         {
-            for (int y = position.y - 1; y < position.y + 2; y++)
+            float changeValue = 3f;
+            UpdateSpreadInterval(changeValue);
+
+            /*
+                        Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                        Vector3Int gridPosition = map.WorldToCell(mousePosition);
+
+                        ScriptableTile data = mapManager.GetScriptableTileData(gridPosition);
+                        InstantiateDecaying(gridPosition, data);*/
+        }
+    }
+
+    private void SetupDecaySpawn()
+    {
+        //Pick a number of random spots on the map at beginning of game to start decay based on difficulty
+        map.CompressBounds();
+        BoundsInt bounds = map.cellBounds;
+        int decaySpawnCounter = 0;
+        while (decaySpawnCounter < (int)difficulty)
+        {
+            Vector3Int gridPosition = new Vector3Int(Random.Range(bounds.xMin, bounds.xMax), Random.Range(bounds.yMin, bounds.yMax));
+            // Random spots must be outside protection circle
+            if (DecayCircle.IsOutsideCircle((Vector3)gridPosition))
             {
-                TryToDecayTile(new Vector3Int(x, y));
+                ScriptableTile data = mapManager.GetScriptableTileData(gridPosition);
+                InstantiateDecaying(gridPosition, data);
+                decaySpawnCounter++;
             }
         }
     }
 
-    private void TryToDecayTile(Vector3Int tilePosition)
+    private void InstantiateDecaying(Vector3Int vector3Int, ScriptableTile data)
+    {
+        ActiveDecay activeDecayTile = Instantiate(activeDecayPrefab);
+        activeDecayTile.transform.position = map.GetCellCenterWorld(vector3Int);
+        activeDecayTile.StartDecay(vector3Int, data, this);
+        activeDecayList.Add(vector3Int);
+    }
+
+    void SpreadFromDecayedTile()
+    {
+        foreach (Vector3Int position in decayedTileList)
+        {
+            TryToSpread(position);
+        }
+    }
+    public void TryToSpread(Vector3Int position)
+    {
+        //for each block surrounding decay tile
+        for (int x = position.x - 1; x < position.x + 2; x++)
+        {
+            for (int y = position.y - 1; y < position.y + 2; y++)
+            {
+                TryToStartDecaying(new Vector3Int(x, y));
+            }
+        }
+    }
+
+    private void TryToStartDecaying(Vector3Int tilePosition)
     {
         if (activeDecayList.Contains(tilePosition)) return;
 
@@ -49,18 +110,12 @@ public class DecayManager : MonoBehaviour
         if(data != null && data.canDecay)
         {
             if(Random.Range(0f,100f) <= data.spreadChance) {
-                SetTileDecaying(tilePosition, data);
+                InstantiateDecaying(tilePosition, data);
             }
         }
     }
 
-    private void SetTileDecaying(Vector3Int vector3Int, ScriptableTile data)
-    {
-        ActiveDecay activeDecayTile = Instantiate(activeDecayPrefab);
-        activeDecayTile.transform.position = map.GetCellCenterWorld(vector3Int);
-        activeDecayTile.StartDecay(vector3Int, data, this);
-        activeDecayList.Add(vector3Int);
-    }
+
 
     internal void FinishDecaying(Vector3Int position)
     {
@@ -74,43 +129,20 @@ public class DecayManager : MonoBehaviour
         decayedTileList.Add(position);
     }
  
-    private void Update()
+    private void UpdateSpreadInterval(float changeValue)
     {
-        
-        if(Input.GetMouseButtonDown(0))
-        {
-            Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            Vector3Int gridPosition = map.WorldToCell(mousePosition);
-
-            ScriptableTile data = mapManager.GetScriptableTileData(gridPosition);
-            SetTileDecaying(gridPosition, data);
-        }
+        spreadInterval += changeValue;
+        CancelInvoke(nameof(SpreadFromDecayedTile));
+        InvokeRepeating(nameof(SpreadFromDecayedTile), spreadInterval, spreadInterval);
     }
 
-    void TryToDecayTile()
-    {
-        foreach(Vector3Int position in decayedTileList)
-        {
-            TryToSpread(position);
-        }
-    }
+  //Going to need to figure out how to decay decorations, like trees and maybe houses
+}
 
-
-    //Pick random spots on the map at beginning of game to start decay
-    private void Start()
-    {
-
-        InvokeRepeating(nameof(TryToDecayTile), 5f, spreadInterval);
-        
-        BoundsInt bounds = map.cellBounds;
-        Vector3Int gridPosition = new Vector3Int(Random.Range(bounds.xMin, bounds.xMax), Random.Range(bounds.yMin, bounds.yMax));
-        ScriptableTile data = mapManager.GetScriptableTileData(gridPosition);
-        SetTileDecaying(gridPosition, data);
-
-    }
-
-
-    //Right now, spread interval can not be > decay interval because it will destroy active decay object.  Move that
-
-    //Going to need to figure out how to decay decorations, like trees and maybe houses
+public enum Difficulty
+{
+    Peaceful = 0,
+    Easy = 3,
+    Medium = 5,
+    Hard = 7
 }

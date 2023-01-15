@@ -18,7 +18,6 @@ public class ActiveDecay : MonoBehaviour
         this.decayManager = decayManager;
 
         timer = data.decayTime;
-        waitTimer = data.spreadInterval;
     }
 
     // Update is called once per frame
@@ -27,15 +26,8 @@ public class ActiveDecay : MonoBehaviour
         timer -= Time.deltaTime;
         if(timer <= 0)
         {
-            Debug.Log("WE MADE IT");
-            decayManager.FinishDecay(position);
+            decayManager.FinishDecaying(position);
             Destroy(gameObject);
-        }
-        waitTimer -= Time.deltaTime;
-        if(waitTimer <= 0)
-        {
-            waitTimer = tileData.spreadInterval;
-            decayManager.TryToSpread(position, tileData.spreadChance);
         }
     }
 }

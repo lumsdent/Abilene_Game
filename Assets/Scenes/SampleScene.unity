@@ -101934,9 +101934,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   map: {fileID: 111404194}
-  tileDataList:
-  - {fileID: 11400000, guid: ba8fcad0ae532034082c679666bdb8f5, type: 2}
+  scriptableTileList:
   - {fileID: 11400000, guid: 323dd04748c63924fa39ce9086ac1491, type: 2}
+  - {fileID: 11400000, guid: ba8fcad0ae532034082c679666bdb8f5, type: 2}
 --- !u!4 &950980395
 Transform:
   m_ObjectHideFlags: 0

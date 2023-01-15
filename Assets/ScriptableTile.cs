@@ -10,5 +10,5 @@ public class ScriptableTile : ScriptableObject
 
     public bool canDecay;
 
-    public float spreadChance, decayTime, spreadInterval;
+    public float spreadChance, decayTime;
 }

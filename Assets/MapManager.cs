@@ -10,15 +10,17 @@ public class MapManager : MonoBehaviour
     [SerializeField]
     private Tilemap map;
     [SerializeField]
-    private List<ScriptableTile> tileDataList;
+    private List<ScriptableTile> scriptableTileList;
 
     private Dictionary<TileBase, ScriptableTile> tileDataDic;
 
     private void Awake()
     {
+
+        
         tileDataDic= new Dictionary<TileBase, ScriptableTile>();
 
-        foreach (ScriptableTile tileData in tileDataList)
+        foreach (ScriptableTile tileData in scriptableTileList)
         {
             foreach (var tile in tileData.tiles)
             {
@@ -32,4 +34,7 @@ public class MapManager : MonoBehaviour
         TileBase tile = map.GetTile(tilePosition);
         return tile == null ? null : tileDataDic[tile];
     }
+
+
+
 }

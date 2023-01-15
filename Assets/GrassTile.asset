@@ -16,5 +16,5 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 607974b36c19bc94ea39d2179c503600, type: 2}
   canDecay: 1
   spreadChance: 50
-  decayTime: 10
-  spreadInterval: 10
+  decayTime: 2
+  spreadInterval: 2

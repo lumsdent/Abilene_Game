@@ -33,7 +33,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (DecayCircle.IsOutsideCircle(playerTransform.localPosition))
         {
-            Debug.Log("Outside");
+            /*Debug.Log("Outside");*/
         }
             // execute block of code here
             yield return new WaitForSeconds(1f);

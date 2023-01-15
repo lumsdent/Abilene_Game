@@ -31,7 +31,7 @@ public class DecayCircle : MonoBehaviour
         Vector3 positionChangeVector = (targetCirclePosition - circlePosition).normalized;
         Vector3 newCirclePosition = circlePosition + positionChangeVector * Time.deltaTime * circleShrinkSpeed;
         SetCircleSize(newCircleSize, newCirclePosition);
-        StartCoroutine("RefreshTiles");
+        StartCoroutine(nameof(RefreshTiles));
     }
 
     IEnumerator RefreshTiles()

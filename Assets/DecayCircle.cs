@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class DecayCircle : MonoBehaviour
 {
-    private Transform circleTransform;
+  
 
     private static Vector3 circleSize, circlePosition;
     private Vector3 targetCircleSize, targetCirclePosition;
@@ -13,9 +13,8 @@ public class DecayCircle : MonoBehaviour
 
     //TODO remove Hard Coding
     private void Awake()
-    {
-        circleTransform = GetComponent<Transform>();
-        SetCircleSize(new Vector3(30, 30), new Vector3(3, -3));
+    { 
+        SetCircleSize(transform.localScale, transform.position);
 
         //circle movement
         circleShrinkSpeed= 1.0f;
@@ -47,8 +46,8 @@ public class DecayCircle : MonoBehaviour
         circlePosition= position;
         circleSize = size;
 
-        circleTransform.localScale = size;
-        circleTransform.localPosition = position;  
+        transform.localScale = size;
+        transform.localPosition = position;  
     }
 
 

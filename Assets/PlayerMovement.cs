@@ -7,10 +7,6 @@ using UnityEngine.Tilemaps;
 public class PlayerMovement : MonoBehaviour
 {
 
-   
-
-
-
     Rigidbody2D rb;
     Vector2 movement;
     Transform playerTransform;

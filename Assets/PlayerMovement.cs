@@ -31,6 +31,7 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
+        
         rb.velocity = movement * moveSpeed;
        
         StartCoroutine("CircleCheck");
@@ -50,5 +51,16 @@ public class PlayerMovement : MonoBehaviour
     void OnMove(InputValue inputValue)
     {
         movement = inputValue.Get<Vector2>();
+        if (movement.x != 0 || movement.y != 0)
+        {
+            animator.SetBool("isWalking", true);
+            animator.SetFloat("AnimX", movement.x);
+            animator.SetFloat("AnimY", movement.y);
+
+        }
+        else
+        {
+            animator.SetBool("isWalking", false);
+        }
     }
 }
